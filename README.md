@@ -19,7 +19,7 @@ npm install
 install bower components
 
 ```
-bower intall
+bower install
 ```
 
 run the app using 
@@ -34,5 +34,5 @@ type the name of the place on the left side bar search to filter them.
 click on any marker to display info window that contain some informations about place
 
 
-###Sources:
+##Sources:
 https://github.com/jtemplet/generator-knockout-gulp-bootstrap
