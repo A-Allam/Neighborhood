@@ -1,0 +1,60 @@
+$icon-font-path: '../bower_components/bootstrap-sass-official/assets/fonts/bootstrap/';
+
+// bower:scss
+@import "../../bower_components/bootstrap-sass-official/assets/stylesheets/_bootstrap.scss";
+// endbower
+
+#map {
+  height: 100%;
+}
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+#floating-panel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 5;
+  background-color: #fff;
+  padding: 5px;
+  text-align: center;
+  font-family: 'Roboto','sans-serif';
+  line-height: 30px;
+  padding-left: 10px;
+  width: 400px;
+  height: 100%;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+  overflow-y: scroll;
+}
+ul{
+  list-style-type: none;
+  text-align: left;
+  margin: 0;
+  padding: 10px;
+
+  li{
+    list-style-type: none;
+    text-align: left;
+    color: #8C8C8C;
+    font-size: 12px;
+    padding-top: 6px;
+    padding-bottom: 7px;
+    border-top: 1px solid #e6e6e6;
+    padding: 15px;
+
+    &:hover{
+      background-color: rgba(0, 0, 0, .06);
+      outline: none;
+      text-decoration: none;
+    }
+  }
+
+  a{
+    &:hover{
+      text-decoration: none;
+    }
+  }
+}
+
