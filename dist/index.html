@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
@@ -6,37 +6,44 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, minimal-ui">
   <title>Neighborhood</title>
   <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
-  <!-- built with help from https://github.com/jtemplet/generator-knockout-gulp-bootstrap-->
+  <!-- built with help from http://dsbotta.github.io/Neighborhood-Map/-->
   
 
   <link rel="stylesheet" href="styles/main.css">
 </head>
 <body>
   <div id="map"></div>
-  <div id="floating-panel">
-    <input id="input" placeholder="Search…" type="input" data-bind="textInput: query, valueUpdate: 'keydown'" class="form-control">
-    </input>
-    <div id="scroller">
+  <a href="#" class="menu-toggle">
+    <span class="glyphicon glyphicon-align-justify"></span>
+  </a>
+  <aside id="floating-panel">
+    <div class="col-md-10 col-md-offset-1">
+      <input id="input" placeholder="Search…" type="text" data-bind="textInput: query, valueUpdate: 'keydown', event: {keyup: enterSearch}" class="form-control">
+    </div>
+    <div class="clearfix"></div>
+    <div id="scroller" >
       <ul data-bind="foreach:markers">
-        <div data-bind="visible: visible">
+        <li data-bind="visible: visible">
           <a href="#" data-bind="attr: {id: id}">
-            <li>
-              <strong data-bind="text: title"></strong>
-              <p data-bind="text: cityAddress"></p> 
-            </li>
+            <strong data-bind="text: title"></strong>
+            <p data-bind="text: cityAddress"></p> 
           </a>
-        </div>
+        </li>
       </ul>
     </div>
-  </div>
+  </aside>
 
-  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA_-bVLM74m2oS072Ns6AZHfb7pF8ymEdI&callback=initMap">
-  </script>
+
 
   <script src="scripts/vendor.js"></script>
 
   <script src="scripts/plugins.js"></script>
 
   <script src="scripts/main.js"></script>
+
+  <script async defer onerror="mapError()" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA_-bVLM74m2oS072Ns6AZHfb7pF8ymEdI&callback=initMap">
+  </script>
+
+
 </body>
 </html>

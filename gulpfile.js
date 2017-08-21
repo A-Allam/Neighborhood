@@ -29,8 +29,8 @@ gulp.task('html', ['styles'], function () {
 
   return gulp.src('app/*.html')
     .pipe(assets)
-    .pipe($.if('*.js', $.uglify()))
-    .pipe($.if('*.css', cssChannel()))
+    // .pipe($.if('*.js', $.uglify()))
+    // .pipe($.if('*.css', cssChannel()))
     .pipe(assets.restore())
     .pipe($.useref())
     .pipe(gulp.dest('dist'));
@@ -38,10 +38,6 @@ gulp.task('html', ['styles'], function () {
 
 gulp.task('images', function () {
   return gulp.src('app/images/**/*')
-    .pipe($.cache($.imagemin({
-      progressive: true,
-      interlaced: true
-    })))
     .pipe(gulp.dest('dist/images'));
 });
 
@@ -113,7 +109,7 @@ gulp.task('watch', ['connect', 'serve'], function () {
   gulp.watch('bower.json', ['wiredep']);
 });
 
-gulp.task('build', ['jshint', 'html', 'images', 'fonts', 'extras'], function () {
+gulp.task('build', ['html', 'images', 'fonts', 'extras'], function () {
   return gulp.src('dist/**/*').pipe($.size({title: 'build', gzip: true}));
 });
 

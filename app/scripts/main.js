@@ -12,6 +12,7 @@ function initMap() {
   };
   map = new google.maps.Map(document.getElementById('map'), mapOptions);
   setMarkers(markers);
+  console.log("markers", markers);
   setAllMap();
 }
 
@@ -34,21 +35,6 @@ function setAllMap() {
   }
 }
 
-
-
-//Get Google Street View image
-
-var streetViewImage;
-var streetViewUrl = 'https://maps.googleapis.com/maps/api/streetview?size=180x90&location=';
-
-function streetView() {
-  streetViewImage = streetViewUrl + markers[i].lat + ',' + markers[i].lng;
-}
-
-
-
-
-
 //add markers to map
 function setMarkers(location) {
 
@@ -61,23 +47,27 @@ function setMarkers(location) {
     });
 
 
-    //call street view function
-    streetView();
-    gettingJSON();
+
+    //Get Google Street View image
+
+    var streetViewImage;
+    var streetViewUrl = 'https://maps.googleapis.com/maps/api/streetview?size=180x90&location=';
+
+    streetViewImage = streetViewUrl + location[i].lat + ',' + location[i].lng;
 
     //call weather API
     var currentTemperature;
-    function gettingJSON(){
-      $.getJSON("http://api.openweathermap.org/data/2.5/weather?lat=" + markers[i].lat + "&lon="+ markers[i].lng+"&APPID=0d38d2be30cd0730296b1f76cfdc3159")
-      .done(function( data ) {
-        currentTemperature = data.main.temp;
-        console.log("currentTemperature", currentTemperature);
-      });
-    };
+    var contentString;
 
+    $.ajax({
+        // async: false,
+        url: "http://api.openweathermap.org/data/2.5/weather?lat=" + location[i].lat + "&lon="+ location[i].lng+"&APPID=0d38d2be30cd0730296b1f76cfdc3159",
+        success: function(data) {
+          console.log("data async", data);
+          currentTemperature = data.main.temp;
+        }
+    });
 
-
-    //add info window to every marker
 
     location[i].contentString = '<img src="' + streetViewImage +
       '" alt="Street View Image of ' + location[i].title + '"><br><hr style="margin-bottom: 5px"><strong>' +
@@ -86,6 +76,8 @@ function setMarkers(location) {
       '<br>' + location[i].cityAddress + '<br></p><a class="web-links" href="http://' + location[i].url +
       '" target="_blank">' + location[i].url + '</a>';
 
+
+    //call street view function
     var infowindow = new google.maps.InfoWindow({
       content: markers[i].contentString
     });
@@ -132,9 +124,6 @@ var viewModel = {
   query: ko.observable(''),
   enterSearch : function(){
     setAllMap();
-  },
-  clickOnElement : function(){
-    console.log("clicked");
   }
 };
 
