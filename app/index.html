@@ -28,8 +28,8 @@
     <div class="clearfix"></div>
     <div id="scroller" >
       <ul data-bind="foreach:markers">
-        <li data-bind="visible: visible">
-          <a href="#" data-bind="attr: {id: id}">
+        <li data-bind="visible: visible" >
+          <a href="#" data-bind="click: function(){ here($index()) }">
             <strong data-bind="text: title"></strong>
             <p data-bind="text: cityAddress"></p> 
           </a>

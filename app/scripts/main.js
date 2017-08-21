@@ -1,6 +1,9 @@
 // global variables
 var map;
 var markersArray = [];
+var infowindow;
+var contentString;
+var bouncingMarker = null;
 
 //Initialize the map
 function initMap() {
@@ -12,7 +15,6 @@ function initMap() {
   };
   map = new google.maps.Map(document.getElementById('map'), mapOptions);
   setMarkers(markers);
-  console.log("markers", markers);
   setAllMap();
 }
 
@@ -38,7 +40,7 @@ function setAllMap() {
 //add markers to map
 function setMarkers(location) {
 
-  for (i = 0; i < location.length; i++) {
+  for (var i = 0; i < location.length; i++) {
     location[i].holdMarker = new google.maps.Marker({
       position: new google.maps.LatLng(location[i].lat, location[i].lng),
       map: map,
@@ -57,28 +59,31 @@ function setMarkers(location) {
 
     //call weather API
     var currentTemperature;
-    var contentString;
 
     $.ajax({
-        // async: false,
+        async: false,
         url: "http://api.openweathermap.org/data/2.5/weather?lat=" + location[i].lat + "&lon="+ location[i].lng+"&APPID=0d38d2be30cd0730296b1f76cfdc3159",
         success: function(data) {
           console.log("data async", data);
           currentTemperature = data.main.temp;
+        },
+        error: function(data){
+          alert("error occured");
         }
     });
 
 
-    location[i].contentString = '<img src="' + streetViewImage +
+    contentString = '<img src="' + streetViewImage +
       '" alt="Street View Image of ' + location[i].title + '"><br><hr style="margin-bottom: 5px"><strong>' +
       location[i].title + '</strong><p>' +
       '<br> current temp:' + currentTemperature +
       '<br>' + location[i].cityAddress + '<br></p><a class="web-links" href="http://' + location[i].url +
       '" target="_blank">' + location[i].url + '</a>';
 
+      location[i].contentString = contentString;
 
-    //call street view function
-    var infowindow = new google.maps.InfoWindow({
+
+    infowindow = new google.maps.InfoWindow({
       content: markers[i].contentString
     });
 
@@ -93,31 +98,51 @@ function setMarkers(location) {
     })(location[i].holdMarker, i));
 
 
-    google.maps.event.addListener(location[i].holdMarker, 'click', clickListener);
 
-    var bouncingMarker = null;
-
-    var clickListener = function() {
-        if(bouncingMarker)
-            bouncingMarker.setAnimation(null);
-        if(bouncingMarker != this) {
-            this.setAnimation(google.maps.Animation.BOUNCE);
-            bouncingMarker = this;
-        } else
-            bouncingMarker = null;
-    }
-
-    //Click nav element to view infoWindow
-    var searchNav = $('#loc' + i);
-    searchNav.click((function(marker, i) {
-      return function() {
-        infowindow.setContent(location[i].contentString);
-        infowindow.open(map, marker);
-        location[i].picBoolTest = true;
-      };
-    })(location[i].holdMarker, i));
+    google.maps.event.addListener(location[i].holdMarker, 'click',function() {
+      if(bouncingMarker){
+        bouncingMarker.setAnimation(null);
+      }
+      if(bouncingMarker != this) {
+        this.setAnimation(google.maps.Animation.BOUNCE);
+        bouncingMarker = this;
+      } else{
+        bouncingMarker = null;
+      }
+    });
   }
 }
+
+
+  // infowindow.setContent(location[i].contentString);
+  // infowindow.open(map, this);
+  // var windowWidth = $(window).width();
+  // location[i].picBoolTest = true;
+
+function here(i){
+  var currentMarker = markers[i];
+  var holdMarker = markers[i].holdMarker;
+  var infowindow = new google.maps.InfoWindow({
+    content: currentMarker.contentString
+  });
+
+  infowindow.setPosition(currentMarker);
+  infowindow.close();
+  infowindow.open(map);
+  currentMarker.picBoolTest = true;
+
+  for (var i = 0; i < markers.length; i++) {
+    markers[i].holdMarker.setAnimation(null);
+  }
+
+  if (holdMarker.getAnimation() !== null) {
+   holdMarker.setAnimation(null);
+  } else {
+    holdMarker.setAnimation(google.maps.Animation.BOUNCE);
+  }
+
+  setTimeout(function () { infowindow.close(); }, 5000);
+};
 
 
 var viewModel = {
