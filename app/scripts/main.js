@@ -15,6 +15,13 @@ function initMap() {
   setAllMap();
 }
 
+// map on error 
+mapError = () => {
+  alert("map can't load");
+};
+
+
+
 //Determines if markers should be visible
 //This function is passed in the knockout viewModel function
 function setAllMap() {
@@ -27,6 +34,8 @@ function setAllMap() {
   }
 }
 
+
+
 //Get Google Street View image
 
 var streetViewImage;
@@ -35,6 +44,10 @@ var streetViewUrl = 'https://maps.googleapis.com/maps/api/streetview?size=180x90
 function streetView() {
   streetViewImage = streetViewUrl + markers[i].lat + ',' + markers[i].lng;
 }
+
+
+
+
 
 //add markers to map
 function setMarkers(location) {
@@ -47,14 +60,30 @@ function setMarkers(location) {
       animation: google.maps.Animation.DROP
     });
 
+
     //call street view function
     streetView();
+    gettingJSON();
+
+    //call weather API
+    var currentTemperature;
+    function gettingJSON(){
+      $.getJSON("http://api.openweathermap.org/data/2.5/weather?lat=" + markers[i].lat + "&lon="+ markers[i].lng+"&APPID=0d38d2be30cd0730296b1f76cfdc3159")
+      .done(function( data ) {
+        currentTemperature = data.main.temp;
+        console.log("currentTemperature", currentTemperature);
+      });
+    };
+
+
 
     //add info window to every marker
+
     location[i].contentString = '<img src="' + streetViewImage +
       '" alt="Street View Image of ' + location[i].title + '"><br><hr style="margin-bottom: 5px"><strong>' +
       location[i].title + '</strong><p>' +
-      location[i].cityAddress + '<br></p><a class="web-links" href="http://' + location[i].url +
+      '<br> current temp:' + currentTemperature +
+      '<br>' + location[i].cityAddress + '<br></p><a class="web-links" href="http://' + location[i].url +
       '" target="_blank">' + location[i].url + '</a>';
 
     var infowindow = new google.maps.InfoWindow({
@@ -71,8 +100,22 @@ function setMarkers(location) {
       };
     })(location[i].holdMarker, i));
 
+
+    google.maps.event.addListener(location[i].holdMarker, 'click', clickListener);
+
+    var bouncingMarker = null;
+
+    var clickListener = function() {
+        if(bouncingMarker)
+            bouncingMarker.setAnimation(null);
+        if(bouncingMarker != this) {
+            this.setAnimation(google.maps.Animation.BOUNCE);
+            bouncingMarker = this;
+        } else
+            bouncingMarker = null;
+    }
+
     //Click nav element to view infoWindow
-    //zoom in and center location on click
     var searchNav = $('#loc' + i);
     searchNav.click((function(marker, i) {
       return function() {
@@ -87,9 +130,16 @@ function setMarkers(location) {
 
 var viewModel = {
   query: ko.observable(''),
+  enterSearch : function(){
+    setAllMap();
+  },
+  clickOnElement : function(){
+    console.log("clicked");
+  }
 };
 
-viewModel.markers = ko.dependentObservable(function() {
+
+viewModel.markers = ko.computed(function() {
   var self = this;
   var search = self.query().toLowerCase();
   return ko.utils.arrayFilter(markers, function(marker) {
@@ -106,10 +156,15 @@ viewModel.markers = ko.dependentObservable(function() {
 
 ko.applyBindings(viewModel);
 
-//show $ hide markers while adding data to input fields
-$("#input").keyup(function() {
-  setAllMap();
+
+// hide aside menue on small screens
+$(".menu-toggle").click(function(){
+  $('#floating-panel').toggle();
 });
+
+if($(window).width() < 600) {
+  $('#floating-panel').hide();
+}
 
 
 
